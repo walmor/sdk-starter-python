@@ -1,5 +1,6 @@
 import os
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from faker import Faker
 from twilio.rest import Client
 from twilio.jwt.access_token import AccessToken
@@ -20,6 +21,7 @@ def snake_case_keys(somedict):
     return snake_case_dict
 
 app = Flask(__name__)
+CORS(app)
 fake = Faker()
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
