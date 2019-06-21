@@ -174,4 +174,4 @@ def provision_sync_default_service():
 
 if __name__ == '__main__':
     provision_sync_default_service()
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=os.environ.get('PORT'))
