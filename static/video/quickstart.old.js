@@ -36,25 +36,35 @@ if (!navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) {
 // from the room, if joined.
 window.addEventListener('beforeunload', leaveRoomIfJoined);
 
-$('#btn-disconnect').hide();
+$.getJSON('/token', function(data) {
+  identity = data.identity;
 
-$('.btn-connect').click(function() {
-  identity = $(this).data('value');
+  document.getElementById('room-controls').style.display = 'block';
 
-  $.getJSON(`/token/${identity}`, function(data) {
-    const connectOptions = { name: 'Video Stem2Win PoC', logLevel: 'debug' };
-    if (previewTracks) {
-      connectOptions.tracks = previewTracks;
+  // Bind button to join room
+  document.getElementById('button-join').onclick = function () {
+    roomName = document.getElementById('room-name').value;
+    if (roomName) {
+      log("Joining room '" + roomName + "'...");
+
+      var connectOptions = { name: roomName, logLevel: 'debug' };
+      if (previewTracks) {
+        connectOptions.tracks = previewTracks;
+      }
+
+      Twilio.Video.connect(data.token, connectOptions).then(roomJoined, function(error) {
+        log('Could not connect to Twilio: ' + error.message);
+      });
+    } else {
+      alert('Please enter a room name.');
     }
+  };
 
-    Twilio.Video.connect(data.token, connectOptions).then(roomJoined, function(error) {
-      console.log('Could not connect to Twilio: ' + error.message);
-    });
-  });
-});
-
-$('#btn-disconnect').click(function() {
-  activeRoom.disconnect();
+  // Bind button to leave room
+  document.getElementById('button-leave').onclick = function () {
+    log('Leaving room...');
+    activeRoom.disconnect();
+  };
 });
 
 // Successfully connected!
@@ -62,12 +72,8 @@ function roomJoined(room) {
   activeRoom = room;
 
   log("Joined as '" + identity + "'");
-  $('#local-media-title').text(`Local (${identity})`);
-  $('.btn-connect').hide();
-  $('#btn-disconnect').show();
-  $('#connection-status')
-    .text(`Connected as ${identity}.`)
-    .show();
+  document.getElementById('button-join').style.display = 'none';
+  document.getElementById('button-leave').style.display = 'inline';
 
   // Draw local video, if not already previewing
   var previewContainer = document.getElementById('local-media');
@@ -87,15 +93,13 @@ function roomJoined(room) {
   });
 
   room.on('trackAdded', function(track, participant) {
-    log(participant.identity + ' added track: ' + track.kind);
-    $('#remote-media-title').text(`Remote (${participant.identity})`);
+    log(participant.identity + " added track: " + track.kind);
     var previewContainer = document.getElementById('remote-media');
     attachTracks([track], previewContainer);
   });
 
   room.on('trackRemoved', function(track, participant) {
-    log(participant.identity + ' removed track: ' + track.kind);
-    $('#remote-media-title').text('Remote');
+    log(participant.identity + " removed track: " + track.kind);
     detachTracks([track]);
   });
 
@@ -112,20 +116,34 @@ function roomJoined(room) {
     detachParticipantTracks(room.localParticipant);
     room.participants.forEach(detachParticipantTracks);
     activeRoom = null;
-    $('#local-media-title').text('Local');
-    $('#remote-media-title').text('Remote');
-    $('#connection-status').hide();
-    $('.btn-connect').show();
-    $('#btn-disconnect').hide();
+    document.getElementById('button-join').style.display = 'inline';
+    document.getElementById('button-leave').style.display = 'none';
   });
 }
 
+//  Local video preview
+document.getElementById('button-preview').onclick = function() {
+  var localTracksPromise = previewTracks
+  ? Promise.resolve(previewTracks)
+  : Twilio.Video.createLocalTracks();
+
+  localTracksPromise.then(function(tracks) {
+    previewTracks = tracks;
+    var previewContainer = document.getElementById('local-media');
+    if (!previewContainer.querySelector('video')) {
+      attachTracks(tracks, previewContainer);
+    }
+  }, function(error) {
+    console.error('Unable to access local media', error);
+    log('Unable to access Camera and Microphone');
+  });
+};
+
 // Activity log
 function log(message) {
-  console.log(message);
-  // var logDiv = document.getElementById('log');
-  // logDiv.innerHTML += '<p>&gt;&nbsp;' + message + '</p>';
-  // logDiv.scrollTop = logDiv.scrollHeight;
+  var logDiv = document.getElementById('log');
+  logDiv.innerHTML += '<p>&gt;&nbsp;' + message + '</p>';
+  logDiv.scrollTop = logDiv.scrollHeight;
 }
 
 function leaveRoomIfJoined() {

@@ -1,31 +1,38 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Twilio Video - Video Quickstart</title>
-  <link rel="stylesheet" href="site.css">
-</head>
-<body>
-  <div id="remote-media"></div>
-  <div id="controls">
-    <div id="preview">
-      <p class="instructions">Hello Beautiful</p>
-      <div id="local-media"></div>
-      <button id="button-preview">Preview My Camera</button>
+  <head>
+    <title>Twilio Video - Video Quickstart</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div id="wrapper">
+      <div class="media-box">
+        <div>
+          <span id="local-media-title" class="media-title">Local</span>
+          <div id="local-media" class="media"></div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="media-box">
+        <div>
+          <span id="remote-media-title" class="media-title">Remote</span>
+          <div id="remote-media" class="media"></div>
+        </div>
+      </div>
     </div>
 
-    <div id="room-controls">
-      <p class="instructions">Room Name:</p>
-      <input id="room-name" type="text" placeholder="Enter a room name" />
-      <button id="button-join">Join Room</button>
-      <button id="button-leave">Leave Room</button>
+    <div id="connection-bar">
+      <div><div id="connection-status">Connection status...</div></div>
+      <button class="btn-connect" data-value="student">Connect as Student</button>
+      <button class="btn-connect" data-value="tutor">Connect as Tutor</button>
+      <button id="btn-disconnect" style="display:none;">Disconnect</button>
     </div>
 
-    <div id="log"></div>
-  </div>
-
-  <script src="//media.twiliocdn.com/sdk/js/common/v0.1/twilio-common.min.js"></script>
-  <script src="//media.twiliocdn.com/sdk/js/video/releases/1.14.0/twilio-video.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-  <script src="quickstart.js"></script>
-</body>
+    <script src="//media.twiliocdn.com/sdk/js/common/v0.1/twilio-common.min.js"></script>
+    <script src="//media.twiliocdn.com/sdk/js/video/releases/1.14.0/twilio-video.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="quickstart.js"></script>
+  </body>
 </html>
