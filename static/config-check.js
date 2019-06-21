@@ -32,19 +32,17 @@ $(function() {
         htmlContent = isMasked ? 'Configured properly' : response[configKey];
         cssClass = 'set';
       }
-      $('#' + fieldId).html(htmlContent).addClass(cssClass);
+      $('#' + fieldId)
+        .html(htmlContent)
+        .addClass(cssClass);
     };
   };
 
   var configureButton = function(buttons, response) {
-    var hasBasicConfig = !!response.TWILIO_ACCOUNT_SID &&
-                         !!response.TWILIO_API_KEY &&
-                         !!response.TWILIO_API_SECRET;
+    var hasBasicConfig = !!response.TWILIO_ACCOUNT_SID && !!response.TWILIO_API_KEY && !!response.TWILIO_API_SECRET;
     return function(buttonId) {
       var configKey = strToConfig(buttons[buttonId]);
-      var cssClass = hasBasicConfig && !!response[configKey]
-        ? 'btn-success'
-        : 'btn-danger';
+      var cssClass = hasBasicConfig && !!response[configKey] ? 'btn-primary' : 'btn-danger';
       $('#' + buttonId).addClass(cssClass);
     };
   };
@@ -52,7 +50,9 @@ $(function() {
   var strToConfig = function(string) {
     return string
       .split(/(?=[A-Z])/)
-      .map(function(e) { return e.toUpperCase(); })
+      .map(function(e) {
+        return e.toUpperCase();
+      })
       .join('_');
-  }
+  };
 });
