@@ -45,6 +45,10 @@ def notify():
 @app.route('/chat/')
 def chat():
     return app.send_static_file('chat/index.html')
+    
+@app.route('/whiteboard/')
+def whiteboard():
+    return app.send_static_file('whiteboard/index.html')
 
 # Basic health check - check environment variables have been configured
 # correctly
