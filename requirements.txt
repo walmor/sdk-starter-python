@@ -3,3 +3,4 @@ faker==0.9.1
 twilio==6.18.1
 python-dotenv==0.9.1
 inflection==0.3.1
+Flask-Cors==3.0.8
